@@ -185,7 +185,9 @@ class _RawTouchGestureDetectorRegionState
       ffi.cursorModel
           .move(_cacheLongPressPosition.dx, _cacheLongPressPosition.dy);
     }
-    inputModel.tap(MouseButtons.right);
+    if (!ffi.ffiModel.isPeerMobile) {
+      inputModel.tap(MouseButtons.right);
+    }
   }
 
   onDoubleFinerTapDown(TapDownDetails d) {
@@ -243,7 +245,7 @@ class _RawTouchGestureDetectorRegionState
       if (ffi.cursorModel.shouldBlock(d.localPosition.dx, d.localPosition.dy)) {
         return;
       }
-      if (isDesktop) {
+      if (isDesktop || isWebDesktop) {
         ffi.cursorModel.trySetRemoteWindowCoords();
       }
       // Workaround for the issue that the first pan event is sent a long time after the start event.
@@ -285,7 +287,7 @@ class _RawTouchGestureDetectorRegionState
     if (lastDeviceKind != PointerDeviceKind.touch) {
       return;
     }
-    if (isDesktop) {
+    if (isDesktop || isWebDesktop) {
       ffi.cursorModel.clearRemoteWindowCoords();
     }
     inputModel.sendMouse('up', MouseButtons.left);
@@ -334,7 +336,8 @@ class _RawTouchGestureDetectorRegionState
     } else {
       // mobile
       _scale = 1;
-      bind.sessionSetViewStyle(sessionId: sessionId, value: "");
+      // No idea why we need to set the view style to "" here.
+      // bind.sessionSetViewStyle(sessionId: sessionId, value: "");
     }
     inputModel.sendMouse('up', MouseButtons.left);
   }
